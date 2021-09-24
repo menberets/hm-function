@@ -549,6 +549,32 @@
      </layout>
     </widget>
    </widget>
+   <widget class="QGroupBox" name="gbSin">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>471</width>
+      <height>171</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string/>
+    </property>
+   </widget>
+   <zorder>gbPuls</zorder>
+   <zorder>gbTri</zorder>
+   <zorder>horizontalLayoutWidget</zorder>
+   <zorder>horizontalLayoutWidget_2</zorder>
+   <zorder>horizontalLayoutWidget_3</zorder>
+   <zorder>mpl</zorder>
+   <zorder>horizontalLayoutWidget_4</zorder>
+   <zorder>horizontalLayoutWidget_5</zorder>
+   <zorder>horizontalLayoutWidget_6</zorder>
+   <zorder>horizontalLayoutWidget_7</zorder>
+   <zorder>horizontalLayoutWidget_12</zorder>
+   <zorder>gbSqu</zorder>
+   <zorder>gbSin</zorder>
   </widget>
  </widget>
  <customwidgets>

@@ -11,10 +11,37 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         super(DesignerMainWindow, self).__init__(parent)
         self.setupUi(self)
         self.btnPlot.clicked.connect(self.draw)
+
         self.btnClear.clicked.connect(self.clearPlot)
+        self.gbPuls.setVisible(False)
+        self.gbSqu.setVisible(False)
+        self.gbTri.setVisible(False)
+        self.gbSin.setVisible(True)
+        self.cmbWaveForm.currentIndexChanged.connect(self.waveFromSelection)
+    
         # self.ani = []
         # self.btnClear.setVisible(False)
-    
+    def waveFromSelection(self):
+        if self.cmbWaveForm.currentIndex() == 0:
+            self.gbPuls.setVisible(False)
+            self.gbSqu.setVisible(False)
+            self.gbTri.setVisible(False)
+            self.gbSin.setVisible(True)
+        if self.cmbWaveForm.currentIndex() == 1:
+            self.gbPuls.setVisible(False)
+            self.gbSqu.setVisible(True)
+            self.gbTri.setVisible(False)
+            self.gbSin.setVisible(False)
+        if self.cmbWaveForm.currentIndex() == 2:
+            self.gbPuls.setVisible(False)
+            self.gbSqu.setVisible(False)
+            self.gbTri.setVisible(True)
+            self.gbSin.setVisible(False)
+        if self.cmbWaveForm.currentIndex() == 3:
+            self.gbPuls.setVisible(True)
+            self.gbSqu.setVisible(False)
+            self.gbTri.setVisible(False)
+            self.gbSin.setVisible(False)
     def ploting(self, noise, fftSize, centerFrq, amp):
         fs = centerFrq * 32
         ts = 1/fs
