@@ -10,13 +10,20 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
     def __init__(self, parent=None):
         super(DesignerMainWindow, self).__init__(parent)
         self.setupUi(self)
-        self.btnPlot.clicked.connect(self.draw)
+        self.ani = [] 
 
+        # button clicking events 
+        self.btnPlot.clicked.connect(self.draw)
         self.btnClear.clicked.connect(self.clearPlot)
+        
+        self.btnClear.setEnabled(False) # disabling clear button on the start
+
+        # hiding all waveform properties except sine wave
         self.gbPuls.setVisible(False)
         self.gbSqu.setVisible(False)
         self.gbTri.setVisible(False)
         self.gbSin.setVisible(True)
+        # setting comboBox default value to sine
         self.cmbWaveForm.currentIndexChanged.connect(self.waveFromSelection)
                 
         """ setting up waveform navigation in between 
@@ -48,7 +55,6 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
             self.gbTri.setVisible(False)
             self.gbSin.setVisible(False)
 
-
     """ Setting up Visualization property
     - setting x-axis and y-axis canvas number of ticks,
     - setting x-axis and y-axis minimum and amaximum limits
@@ -75,8 +81,8 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
             sinWave = amp * np.sin(2 * np.pi * centerFrq * contTime) 
             # frequency domain of sine wave and add noise to it
             FFTWaveForm = np.fft.fft(sinWave + noise)  
-            # plot/ draw FFT on canvas with 'c'/cyan color      
-            self.mpl.canvas.ax.plot(xf, 2.0/fftSize * np.abs(FFTWaveForm[:fftSize//2]), 'c')
+            # plot/ draw FFT on canvas with 'y'/Yellow color      
+            self.mpl.canvas.ax.plot(xf, 2.0/fftSize * np.abs(FFTWaveForm[:fftSize//2]), 'y')
             # setting x-axis limit from 0 to twis of the center frequency
             self.mpl.canvas.ax.set_xlim(0.0, centerFrq*2) 
         else:
@@ -92,8 +98,8 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
             sinWave = amp * np.sin(2 * np.pi * centerFrq * contTime) 
             # frequency domain of sine wave and add noise to it
             FFTWaveForm = np.fft.fft(sinWave + noise )   
-            # plot/ draw FFT on canvas with 'c'/cyan color      
-            self.mpl.canvas.ax.plot(xf, 2.0/fftSize * np.abs(FFTWaveForm[:fftSize//2]), 'c')
+            # plot/ draw FFT on canvas with 'y'/Yellow color      
+            self.mpl.canvas.ax.plot(xf, 2.0/fftSize * np.abs(FFTWaveForm[:fftSize//2]), 'y')
             # setting x-axis limit from 0 to twis of the center frequency
             self.mpl.canvas.ax.set_xlim(0.0, centerFrq*2)         
 
@@ -102,18 +108,28 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         centerFrq = float(self.centerFrq.value())       
         amp = float(self.amplitude.value())
         # global noiseScl
-        condition.condition.figProperty(self)
-        noise = condition.condition.noiseScl(self, fftSize, centerFrq, amp)
+        condition.condition.figProperty(self) #  setup the canvas property
+        # adjusting the noise scale based on the inputed center frequency
+        noise = condition.condition.noiseScl(self, fftSize, centerFrq, amp) 
+        # passing noise, FFT size, Frequency amd aplitude for plotting fubction
         self.ploting(noise, fftSize, centerFrq, amp)
     def draw(self):
-        self.ani = FuncAnimation(self.mpl.canvas.fig, self.animate, interval=80)   #, repeat=False
+        # enabling and disabling button plot and button clear
+        self.btnPlot.setEnabled(False)
+        self.btnClear.setEnabled(True)
+        # moving the plot/image based on the given time interval
+        self.ani = FuncAnimation(self.mpl.canvas.fig, self.animate, interval=90) 
         # condition.condition.figProperty(self)
         self.mpl.canvas.draw()
         self.mpl.canvas.flush_events()
     def clearPlot(self):
-        self.mpl.canvas.ax.cla()
-        self.ani._stop()
-        condition.condition.figProperty(self)
+        # disable clear button and enabling plotting button
+        self.btnClear.setEnabled(False)
+        self.btnPlot.setEnabled(True)
+        self.mpl.canvas.ax.cla() # clearing the canvas/ the fft plot
+        self.ani._stop() # stoping the animating plot
+        condition.condition.figProperty(self) # setup the canvas property
+        # implmenting the property on the canvas
         self.mpl.canvas.draw()
         self.mpl.canvas.flush_events()
 if __name__ == "__main__":
