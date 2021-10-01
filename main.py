@@ -4,6 +4,7 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 import spaDesigner
 from matplotlib.animation import FuncAnimation
 # from scipy.fft import fft, fftfreq
+import pyvisa as visa
 import scipy.fftpack
 import condition
 class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
@@ -11,7 +12,6 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         super(DesignerMainWindow, self).__init__(parent)
         self.setupUi(self)
         self.ani = [] 
-
         # button clicking events 
         self.btnPlot.clicked.connect(self.draw)
         self.btnClear.clicked.connect(self.clearPlot)
@@ -25,35 +25,52 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         self.gbSin.setVisible(True)
         # setting comboBox default value to sine
         self.cmbWaveForm.currentIndexChanged.connect(self.waveFromSelection)
-                
-        """ setting up waveform navigation in between 
-         -sine, 
-         -square, 
-         -triangle, 
-         -pulse and 
-         -arbitrary waveforms.
-        """
+
+    def deviceConneParam(self, waveForm):
+        rm = visa.ResourceManager()
+        dev_ice = rm.open_resource('ASRL1::INSTR')
+        dev_ice.baud_rate = 19200
+        dev_ice.timeout = 65
+        # dev_ice.query('*IDN?') 
+        dev_ice.write('func {}'.format(waveForm))
+    """ setting up waveform navigation in between 
+        -sine, 
+        -square, 
+        -triangle, 
+        -pulse and 
+        -arbitrary waveforms.
+    """
     def waveFromSelection(self):
         if self.cmbWaveForm.currentIndex() == 0:
             self.gbPuls.setVisible(False)
             self.gbSqu.setVisible(False)
             self.gbTri.setVisible(False)
             self.gbSin.setVisible(True)
+            self.deviceConneParam('sin')
         if self.cmbWaveForm.currentIndex() == 1:
             self.gbPuls.setVisible(False)
             self.gbSqu.setVisible(True)
             self.gbTri.setVisible(False)
             self.gbSin.setVisible(False)
+            self.deviceConneParam('squ')
         if self.cmbWaveForm.currentIndex() == 2:
             self.gbPuls.setVisible(False)
             self.gbSqu.setVisible(False)
             self.gbTri.setVisible(True)
             self.gbSin.setVisible(False)
+            self.deviceConneParam('ramp')
         if self.cmbWaveForm.currentIndex() == 3:
             self.gbPuls.setVisible(True)
             self.gbSqu.setVisible(False)
             self.gbTri.setVisible(False)
             self.gbSin.setVisible(False)
+            self.deviceConneParam('puls')
+        if self.cmbWaveForm.currentIndex() == 4:
+            self.gbPuls.setVisible(True)
+            self.gbSqu.setVisible(False)
+            self.gbTri.setVisible(False)
+            self.gbSin.setVisible(False)
+            self.deviceConneParam('arb')
 
     """ Setting up Visualization property
     - setting x-axis and y-axis canvas number of ticks,
