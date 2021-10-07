@@ -5,7 +5,8 @@ import spaDesigner
 from matplotlib.animation import FuncAnimation
 # from scipy.fft import fft, fftfreq
 import pyvisa as visa
-import scipy.fftpack
+# import scipy.fftpack
+import ctypes
 import condition
 class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
     def __init__(self, parent=None):
@@ -15,9 +16,11 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         # button clicking events 
         self.btnPlot.clicked.connect(self.draw)
         self.btnClear.clicked.connect(self.clearPlot)
+        self.MessageBox = ctypes.windll.user32.MessageBoxW
+        self.deviceConneParam('sin') # setting the default wave from to sine
         
         self.btnClear.setEnabled(False) # disabling clear button on the start
-
+        
         # hiding all waveform properties except sine wave
         self.gbPuls.setVisible(False)
         self.gbSqu.setVisible(False)
@@ -27,12 +30,17 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         self.cmbWaveForm.currentIndexChanged.connect(self.waveFromSelection)
 
     def deviceConneParam(self, waveForm):
-        rm = visa.ResourceManager()
-        dev_ice = rm.open_resource('ASRL1::INSTR')
-        dev_ice.baud_rate = 19200
-        dev_ice.timeout = 65
-        # dev_ice.query('*IDN?') 
-        dev_ice.write('func {}'.format(waveForm))
+        try:
+            rm = visa.ResourceManager()
+            dev_ice = rm.open_resource('ASRL1::INSTR')
+            dev_ice.baud_rate = 19200
+            dev_ice.timeout = 65
+            print(dev_ice.query('*IDN?')) 
+            dev_ice.write('func {}'.format(waveForm))
+            # dev_ice.write('freq {}'.format(frequency))
+        except visa.VisaIOError:
+            self.MessageBox(0, "Something is wrong with the device!!! \nEither the device is not on.\nOr there is bad connection in between the device and the computer!!!", 'Warnning',64)
+            sys.exit()
     """ setting up waveform navigation in between 
         -sine, 
         -square, 
@@ -46,31 +54,34 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
             self.gbSqu.setVisible(False)
             self.gbTri.setVisible(False)
             self.gbSin.setVisible(True)
-            self.deviceConneParam('sin')
+            centerFreq = self.centerFrq.value()
+            self.deviceConneParam('sin', centerFreq) # setting the device waveform to the sin waveform
         if self.cmbWaveForm.currentIndex() == 1:
             self.gbPuls.setVisible(False)
             self.gbSqu.setVisible(True)
             self.gbTri.setVisible(False)
             self.gbSin.setVisible(False)
-            self.deviceConneParam('squ')
+            centerFreq = self.centerFrq.value()
+            self.deviceConneParam('squ', centerFreq) # setting the device waveform to the square waveform
         if self.cmbWaveForm.currentIndex() == 2:
             self.gbPuls.setVisible(False)
             self.gbSqu.setVisible(False)
             self.gbTri.setVisible(True)
             self.gbSin.setVisible(False)
-            self.deviceConneParam('ramp')
+            centerFreq = self.centerFrq.value()
+            self.deviceConneParam('sawt', centerFreq) # setting the device waveform to the sawtoose/ramp/thriangle waveform
         if self.cmbWaveForm.currentIndex() == 3:
             self.gbPuls.setVisible(True)
             self.gbSqu.setVisible(False)
             self.gbTri.setVisible(False)
             self.gbSin.setVisible(False)
-            self.deviceConneParam('puls')
+            self.deviceConneParam('puls') # setting the device waveform to the Pulse waveform
         if self.cmbWaveForm.currentIndex() == 4:
             self.gbPuls.setVisible(True)
             self.gbSqu.setVisible(False)
             self.gbTri.setVisible(False)
             self.gbSin.setVisible(False)
-            self.deviceConneParam('arb')
+            self.deviceConneParam('arb') # setting the device waveform to the Arbitrary waveform
 
     """ Setting up Visualization property
     - setting x-axis and y-axis canvas number of ticks,
