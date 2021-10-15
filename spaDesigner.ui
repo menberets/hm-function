@@ -116,7 +116,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="amplitude_3">
+      <widget class="QDoubleSpinBox" name="period">
        <property name="minimum">
         <double>-500.000000000000000</double>
        </property>
@@ -142,7 +142,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="amplitude_4">
+      <widget class="QDoubleSpinBox" name="high_level">
        <property name="minimum">
         <double>-500.000000000000000</double>
        </property>
@@ -168,7 +168,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="amplitude_5">
+      <widget class="QDoubleSpinBox" name="low_level">
        <property name="minimum">
         <double>-500.000000000000000</double>
        </property>
@@ -194,7 +194,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="amplitude_6">
+      <widget class="QDoubleSpinBox" name="offSet">
        <property name="minimum">
         <double>-500.000000000000000</double>
        </property>
