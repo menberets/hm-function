@@ -30,31 +30,26 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         self.gbSin.setVisible(True)
         # setting comboBox default value to sine
         self.cmbWaveForm.currentIndexChanged.connect(self.waveFromSelection)
-    def settingParameter(self, ceter_frequency, amplitude, period, high_level, low_level, offSet):#, hign_width = 0,low_width = 0,duty_cycle =0, rise_time = 0, fall_time = 0, symmetry = 0, edge_time = 0):#
+    
+    def settingParameter(self, ceter_frequency, amplitude, high_level, low_level, offSet, hign_width = 0,low_width = 0,duty_cycle =0, rise_time = 0, fall_time = 0, symmetry = 0, edge_time = 0):#
         if self.cmbWaveForm.currentIndex() == 0:
-            center = self.centerFrq.value()# 50 * 10**6
-            ampl = (self.amplitude.value())
-            # per = 11#(self.period.value())
-            high = (self.high_level.value())
-            low = (self.low_level.value())
-            offset = (self.offSet.value())
             if high_level-low_level ==amplitude:                
-                self.dev_ice.write('FREQ {}'.format(center))
-                self.dev_ice.write('VOLT {}'.format(ampl))
+                self.dev_ice.write('FREQ {}'.format(ceter_frequency))
+                self.dev_ice.write('VOLT {}'.format(amplitude))
                 # self.dev_ice.write('PER {}'.format(per))
-                self.dev_ice.write('VOLT:HIGH {}'.format(high))
-                self.dev_ice.write('VOLT:LOW {}'.format(low))
-                self.dev_ice.write('VOLT:OFFS {}'.format(offset))
+                self.dev_ice.write('VOLT:HIGH {}'.format(high_level))
+                self.dev_ice.write('VOLT:LOW {}'.format(low_level))
+                self.dev_ice.write('VOLT:OFFS {}'.format(offSet))
             else:
                 compensation = amplitude/2
                 high_level = compensation
                 low_level = -(compensation)                 
-                self.dev_ice.write('FREQ {}'.format(center))
-                self.dev_ice.write('VOLT {}'.format(ampl))
+                self.dev_ice.write('FREQ {}'.format(ceter_frequency))
+                self.dev_ice.write('VOLT {}'.format(amplitude))
                 # self.dev_ice.write('PER {}'.format(per))
-                self.dev_ice.write('VOLT:HIGH {}'.format(high))
-                self.dev_ice.write('VOLT:LOW {}'.format(low))
-                self.dev_ice.write('VOLT:OFFS {}'.format(offset))
+                self.dev_ice.write('VOLT:HIGH {}'.format(high_level))
+                self.dev_ice.write('VOLT:LOW {}'.format(low_level))
+                self.dev_ice.write('VOLT:OFFS {}'.format(offSet))
         # elif self.cmbWaveForm.currentIndex() == 1:
         #     self.cotrlCommand.extend(['FREQ {}'.format(ceter_frequency), 'VOLT {}'.format(amplitude),'PER {}'.format(period),'VOLT:LOW {}'.format(high_level), 'VOLT:HIGH {}'.format(low_level), 'OFFS {}'.format(offSet)])
         # elif self.cmbWaveForm.currentIndex() == 2:
@@ -91,16 +86,7 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
             self.gbSqu.setVisible(False)
             self.gbTri.setVisible(False)
             self.gbSin.setVisible(True)
-            # centerFreq = self.centerFrq.value()
             self.deviceConneParam('sin') # setting the device waveform to the sin waveform
-            
-           
-            # self.cotrlCommand = ['FREQ {}'.format(center), 'VOLT {}'.format(ampl),'PER {}'.format(per),'VOLT:LOW {}'.format(high), 'VOLT:HIGH {}'.format(low),'VOLT:OFFS {}'.format(offset)]
-            print("len(self.cotrlCommand)")
-            # self.settingParameter(center,ampl, per, high, low, offset)
-            for i in self.cotrlCommand:
-                self.dev_ice.write(i)
-            # print(len(self.cotrlCommand))
         elif self.cmbWaveForm.currentIndex() == 1:
             self.gbPuls.setVisible(False)
             self.gbSqu.setVisible(True)
@@ -189,20 +175,24 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         self.ploting(noise, fftSize, centerFrq, amp)
     
     def draw(self):
-        self.dev_ice.write('func {}'.format('sin'))
+        # self.dev_ice.write('func {}'.format('sin'))
         center = self.centerFrq.value()# 50 * 10**6
         ampl = (self.amplitude.value())
         # per = 11#(self.period.value())
         high = (self.high_level.value())
         low = (self.low_level.value())
         offset = (self.offSet.value())
-        
-        self.dev_ice.write('FREQ {}'.format(center))
-        self.dev_ice.write('VOLT {}'.format(ampl))
-        # self.dev_ice.write('PER {}'.format(per))
-        self.dev_ice.write('VOLT:HIGH {}'.format(high))
-        self.dev_ice.write('VOLT:LOW {}'.format(low))
-        self.dev_ice.write('VOLT:OFFS {}'.format(offset))
+        if self.cmbWaveForm.currentText == "Sine":
+            self.settingParameter(center, ampl, high, low, offset)
+        else:
+            print("ohhh yaaaa")
+
+        # self.dev_ice.write('FREQ {}'.format(center))
+        # self.dev_ice.write('VOLT {}'.format(ampl))
+        # # self.dev_ice.write('PER {}'.format(per))
+        # self.dev_ice.write('VOLT:HIGH {}'.format(high))
+        # self.dev_ice.write('VOLT:LOW {}'.format(low))
+        # self.dev_ice.write('VOLT:OFFS {}'.format(offset))
 
         # if self.cmbWaveForm.currentIndex == 0:
         #     # self.dev_ice.write("func {}".format("sin"))
@@ -211,6 +201,7 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         # for comand in self.cotrlCommand:
         #     print(comand)
         #     self.dev_ice.write(comand)
+
         """
         # enabling and disabling button plot and button clear
         self.btnPlot.setEnabled(False)
