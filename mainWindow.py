@@ -50,17 +50,99 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
                 self.dev_ice.write('VOLT:HIGH {}'.format(high_level))
                 self.dev_ice.write('VOLT:LOW {}'.format(low_level))
                 self.dev_ice.write('VOLT:OFFS {}'.format(offSet))
-        # elif self.cmbWaveForm.currentIndex() == 1:
-        #     self.cotrlCommand.extend(['FREQ {}'.format(ceter_frequency), 'VOLT {}'.format(amplitude),'PER {}'.format(period),'VOLT:LOW {}'.format(high_level), 'VOLT:HIGH {}'.format(low_level), 'OFFS {}'.format(offSet)])
-        # elif self.cmbWaveForm.currentIndex() == 2:
-        #     self.cotrlCommand.extend(['FREQ {}'.format(ceter_frequency), 'VOLT {}'.format(amplitude),'PER {}'.format(period),'VOLT:LOW {}'.format(high_level), 'VOLT:HIGH {}'.format(low_level)])
-        # elif self.cmbWaveForm.currentIndex() == 3:
-        #     self.cotrlCommand.extend(['FREQ {}'.format(ceter_frequency), 'VOLT {}'.format(amplitude),'PER {}'.format(period),'VOLT:LOW {}'.format(high_level), 'VOLT:HIGH {}'.format(low_level)])
-        # else:
-        #     self.cotrlCommand.extend(['FREQ {}'.format(ceter_frequency), 'VOLT {}'.format(amplitude),'PER {}'.format(period),'VOLT:LOW {}'.format(high_level), 'VOLT:HIGH {}'.format(low_level)])
-        
-        #self.dev_ice.write('FREQ {}'.format(ceter_frequency))#, 'VOLT {}'.format(amplitude),'PER {}'.format(period),'VOLT:LOW {}'.format(high_level), 'VOLT:HIGH {}'.format(low_level))
-        # self.MessageBox(None, "somting to print","information", 0)
+        elif self.cmbWaveForm.currentIndex() == 1:
+            if high_level-low_level ==amplitude:                
+                self.dev_ice.write('FREQ {}'.format(ceter_frequency))
+                self.dev_ice.write('VOLT {}'.format(amplitude))
+                # self.dev_ice.write('PER {}'.format(per))
+                self.dev_ice.write('VOLT:HIGH {}'.format(high_level))
+                self.dev_ice.write('VOLT:LOW {}'.format(low_level))
+                self.dev_ice.write('VOLT:OFFS {}'.format(offSet))
+                self.dev_ice.write('FUNCtion:SQUare:WIDTh:HIGH {}'.format(hign_width))
+                self.dev_ice.write('FUNCtion:SQUare:WIDTh:LOW {}'.format(low_width))
+                self.dev_ice.write('FUNCtion:SQUare:DCYCle {}'.format(duty_cycle))
+            else:
+                compensation = amplitude/2
+                high_level = compensation
+                low_level = -(compensation)                 
+                self.dev_ice.write('FREQ {}'.format(ceter_frequency))
+                self.dev_ice.write('VOLT {}'.format(amplitude))
+                # self.dev_ice.write('PER {}'.format(per))
+                self.dev_ice.write('VOLT:HIGH {}'.format(high_level))
+                self.dev_ice.write('VOLT:LOW {}'.format(low_level))
+                self.dev_ice.write('VOLT:OFFS {}'.format(offSet))
+                self.dev_ice.write('FUNCtion:SQUare:WIDTh:HIGH {}'.format(hign_width))
+                self.dev_ice.write('FUNCtion:SQUare:WIDTh:LOW {}'.format(low_width))
+                self.dev_ice.write('FUNCtion:SQUare:DCYCle {}'.format(duty_cycle))
+        elif self.cmbWaveForm.currentIndex() == 2:
+            if high_level-low_level ==amplitude:                
+                self.dev_ice.write('FREQ {}'.format(ceter_frequency))
+                self.dev_ice.write('VOLT {}'.format(amplitude))
+                # self.dev_ice.write('PER {}'.format(per))
+                self.dev_ice.write('VOLT:HIGH {}'.format(high_level))
+                self.dev_ice.write('VOLT:LOW {}'.format(low_level))
+                self.dev_ice.write('VOLT:OFFS {}'.format(offSet))
+                self.dev_ice.write('FUNCtion:RAMP:TIMe:RISe {}'.format(rise_time))
+                self.dev_ice.write('FUNCtion:RAMP:TIMe:FALL {}'.format(fall_time))
+                self.dev_ice.write('FUNCtion:RAMP:SYMMetry {}'.format(symmetry))
+            else:
+                compensation = amplitude/2
+                high_level = compensation
+                low_level = -(compensation)                 
+                self.dev_ice.write('FREQ {}'.format(ceter_frequency))
+                self.dev_ice.write('VOLT {}'.format(amplitude))
+                # self.dev_ice.write('PER {}'.format(per))
+                self.dev_ice.write('VOLT:HIGH {}'.format(high_level))
+                self.dev_ice.write('VOLT:LOW {}'.format(low_level))
+                self.dev_ice.write('VOLT:OFFS {}'.format(offSet))
+                self.dev_ice.write('FUNCtion:RAMP:TIMe:RISe {}'.format(rise_time))
+                self.dev_ice.write('FUNCtion:RAMP:TIMe:FALL {}'.format(fall_time))
+                self.dev_ice.write('FUNCtion:RAMP:SYMMetry {}'.format(symmetry))
+        elif self.cmbWaveForm.currentIndex() ==3:
+            if high_level-low_level ==amplitude:                
+                self.dev_ice.write('FREQ {}'.format(ceter_frequency))
+                self.dev_ice.write('VOLT {}'.format(amplitude))
+                # self.dev_ice.write('PER {}'.format(per))
+                self.dev_ice.write('VOLT:HIGH {}'.format(high_level))
+                self.dev_ice.write('VOLT:LOW {}'.format(low_level))
+                self.dev_ice.write('VOLT:OFFS {}'.format(offSet))
+                self.dev_ice.write('FUNCtion:PULSe:WIDTh:HIGH {}'.format(hign_width))
+                self.dev_ice.write('FUNCtion:PULSe:WIDTh:LOW {}'.format(low_width))
+                self.dev_ice.write('FUNCtion:PULSe:DCYCle {}'.format(duty_cycle))
+                self.dev_ice.write('FUNCtion:PULSe:ETIMe {}'.format(edge_time))
+            else:
+                compensation = amplitude/2
+                high_level = compensation
+                low_level = -(compensation)                 
+                self.dev_ice.write('FREQ {}'.format(ceter_frequency))
+                self.dev_ice.write('VOLT {}'.format(amplitude))
+                # self.dev_ice.write('PER {}'.format(per))
+                self.dev_ice.write('VOLT:HIGH {}'.format(high_level))
+                self.dev_ice.write('VOLT:LOW {}'.format(low_level))
+                self.dev_ice.write('VOLT:OFFS {}'.format(offSet))
+                self.dev_ice.write('FUNCtion:PULSe:WIDTh:HIGH {}'.format(hign_width))
+                self.dev_ice.write('FUNCtion:PULSe:WIDTh:LOW {}'.format(low_width))
+                self.dev_ice.write('FUNCtion:PULSe:DCYCle {}'.format(duty_cycle))
+                self.dev_ice.write('FUNCtion:PULSe:ETIMe {}'.format(edge_time))
+        else:
+            if high_level-low_level ==amplitude:                
+                self.dev_ice.write('FREQ {}'.format(ceter_frequency))
+                self.dev_ice.write('VOLT {}'.format(amplitude))
+                # self.dev_ice.write('PER {}'.format(per))
+                self.dev_ice.write('VOLT:HIGH {}'.format(high_level))
+                self.dev_ice.write('VOLT:LOW {}'.format(low_level))
+                self.dev_ice.write('VOLT:OFFS {}'.format(offSet))
+            else:
+                compensation = amplitude/2
+                high_level = compensation
+                low_level = -(compensation)                 
+                self.dev_ice.write('FREQ {}'.format(ceter_frequency))
+                self.dev_ice.write('VOLT {}'.format(amplitude))
+                # self.dev_ice.write('PER {}'.format(per))
+                self.dev_ice.write('VOLT:HIGH {}'.format(high_level))
+                self.dev_ice.write('VOLT:LOW {}'.format(low_level))
+                self.dev_ice.write('VOLT:OFFS {}'.format(offSet))
+
     
     def deviceConneParam(self, waveForm):
         try:
@@ -182,26 +264,15 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         high = (self.high_level.value())
         low = (self.low_level.value())
         offset = (self.offSet.value())
-        if self.cmbWaveForm.currentText == "Sine":
+        highWidth = self.SquHighWidth.value()/10**-3
+        lowWidth = self.SquLowWidh.value()/10**-3
+        duty = self.SquDcycle.value()
+        if self.cmbWaveForm.currentIndex() == 0:
             self.settingParameter(center, ampl, high, low, offset)
-        else:
-            print("ohhh yaaaa")
-
-        # self.dev_ice.write('FREQ {}'.format(center))
-        # self.dev_ice.write('VOLT {}'.format(ampl))
-        # # self.dev_ice.write('PER {}'.format(per))
-        # self.dev_ice.write('VOLT:HIGH {}'.format(high))
-        # self.dev_ice.write('VOLT:LOW {}'.format(low))
-        # self.dev_ice.write('VOLT:OFFS {}'.format(offset))
-
-        # if self.cmbWaveForm.currentIndex == 0:
-        #     # self.dev_ice.write("func {}".format("sin"))
-        #     self.cotrlCommand = ['FREQ {}'.format(center), 'VOLT {}'.format(ampl),'VOLT:LOW {}'.format(low), 
-        #                             'VOLT:HIGH {}'.format(high),'VOLT:OFFS {}'.format(offset)]
-        # for comand in self.cotrlCommand:
-        #     print(comand)
-        #     self.dev_ice.write(comand)
-
+        if self.cmbWaveForm.currentIndex() == 1:
+            self.settingParameter(center, ampl, high, low, offset,
+                                highWidth, lowWidth, duty)
+            
         """
         # enabling and disabling button plot and button clear
         self.btnPlot.setEnabled(False)
