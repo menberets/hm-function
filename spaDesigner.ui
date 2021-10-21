@@ -215,12 +215,17 @@
      <item>
       <widget class="QLabel" name="label_12">
        <property name="text">
-        <string>Select Waveforms</string>
+        <string>Waveforms</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QComboBox" name="cmbWaveForm">
+       <item>
+        <property name="text">
+         <string>Select Waveform</string>
+        </property>
+       </item>
        <item>
         <property name="text">
          <string>Sine</string>
@@ -250,19 +255,22 @@
      </item>
     </layout>
    </widget>
-   <widget class="QGroupBox" name="gbSqu">
+   <widget class="QGroupBox" name="gbPuls">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
+      <y>50</y>
       <width>471</width>
-      <height>131</height>
+      <height>171</height>
      </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
     </property>
     <property name="title">
      <string/>
     </property>
-    <widget class="QWidget" name="horizontalLayoutWidget_9">
+    <widget class="QWidget" name="horizontalLayoutWidget_19">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -271,16 +279,16 @@
        <height>31</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_10">
+     <layout class="QHBoxLayout" name="horizontalLayout_24">
       <item>
-       <widget class="QLabel" name="label_9">
+       <widget class="QLabel" name="label_23">
         <property name="text">
          <string>High Width (S)</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="SquHighWidth">
+       <widget class="QDoubleSpinBox" name="highWidth">
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
@@ -288,7 +296,7 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="horizontalLayoutWidget_8">
+    <widget class="QWidget" name="horizontalLayoutWidget_20">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -297,16 +305,16 @@
        <height>31</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_9">
+     <layout class="QHBoxLayout" name="horizontalLayout_25">
       <item>
-       <widget class="QLabel" name="label_8">
+       <widget class="QLabel" name="label_24">
         <property name="text">
          <string>Duty Cycle (%)</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="SquDcycle">
+       <widget class="QDoubleSpinBox" name="dcycle">
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
@@ -314,7 +322,7 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="horizontalLayoutWidget_13">
+    <widget class="QWidget" name="horizontalLayoutWidget_21">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -323,16 +331,42 @@
        <height>31</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_14">
+     <layout class="QHBoxLayout" name="horizontalLayout_26">
       <item>
-       <widget class="QLabel" name="label_13">
+       <widget class="QLabel" name="label_25">
         <property name="text">
          <string>Low Width (S)</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="SquLowWidh">
+       <widget class="QDoubleSpinBox" name="lowWidth">
+        <property name="minimum">
+         <double>-500.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="horizontalLayoutWidget_15">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>130</y>
+       <width>451</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_16">
+      <item>
+       <widget class="QLabel" name="lblAdge">
+        <property name="text">
+         <string>Adge Time (ns)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDoubleSpinBox" name="adgeTime">
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
@@ -345,10 +379,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
+      <y>50</y>
       <width>471</width>
       <height>131</height>
      </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
     </property>
     <property name="title">
      <string/>
@@ -432,138 +469,6 @@
      </layout>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="gbPuls">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>40</y>
-      <width>471</width>
-      <height>171</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string/>
-    </property>
-    <widget class="QWidget" name="horizontalLayoutWidget_19">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>451</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_24">
-      <item>
-       <widget class="QLabel" name="label_23">
-        <property name="text">
-         <string>High Width (S)</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QDoubleSpinBox" name="highWidth_4">
-        <property name="minimum">
-         <double>-500.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="horizontalLayoutWidget_20">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>90</y>
-       <width>451</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_25">
-      <item>
-       <widget class="QLabel" name="label_24">
-        <property name="text">
-         <string>Duty Cycle (%)</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QDoubleSpinBox" name="PulsDcycle">
-        <property name="minimum">
-         <double>-500.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="horizontalLayoutWidget_21">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>50</y>
-       <width>451</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_26">
-      <item>
-       <widget class="QLabel" name="label_25">
-        <property name="text">
-         <string>Low Width (S)</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QDoubleSpinBox" name="lowWidh_4">
-        <property name="minimum">
-         <double>-500.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="horizontalLayoutWidget_15">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>130</y>
-       <width>451</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_16">
-      <item>
-       <widget class="QLabel" name="label_15">
-        <property name="text">
-         <string>Adge Time (ns)</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QDoubleSpinBox" name="adgeTime">
-        <property name="minimum">
-         <double>-500.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </widget>
-   <widget class="QGroupBox" name="gbSin">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>40</y>
-      <width>471</width>
-      <height>171</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string/>
-    </property>
-   </widget>
-   <zorder>gbPuls</zorder>
-   <zorder>gbTri</zorder>
    <zorder>horizontalLayoutWidget</zorder>
    <zorder>horizontalLayoutWidget_2</zorder>
    <zorder>horizontalLayoutWidget_3</zorder>
@@ -573,8 +478,8 @@
    <zorder>horizontalLayoutWidget_6</zorder>
    <zorder>horizontalLayoutWidget_7</zorder>
    <zorder>horizontalLayoutWidget_12</zorder>
-   <zorder>gbSqu</zorder>
-   <zorder>gbSin</zorder>
+   <zorder>gbTri</zorder>
+   <zorder>gbPuls</zorder>
   </widget>
  </widget>
  <customwidgets>
