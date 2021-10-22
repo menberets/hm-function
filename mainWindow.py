@@ -15,19 +15,27 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         self.cotrlCommand = []  # controlling command ready to send
         self.ani = [] 
         self.dev_ice = None
-        # button clicking events 
+
+        ''''button clicking events '''
+
         self.btnPlot.clicked.connect(self.draw)
         self.btnClear.clicked.connect(self.clearPlot)
         self.MessageBox = ctypes.windll.user32.MessageBoxW
         self.rm = visa.ResourceManager()
-        self.dev_ice = self.rm.open_resource('ASRL1::INSTR')
-        self.deviceConneParam('squ') # setting the default wave from to sine
+
+        ''' checking whether the port is busy or not'''
+
+        try:
+            self.dev_ice = self.rm.open_resource('ASRL1::INSTR')
+        except visa.VisaIOError:
+            self.MessageBox(0,"port is in use by another program /n clear the port and run the program again!","Warnning",64)
+            sys.exit()
+        
+        self.deviceConneParam('sin') # setting the default wave from to sine
         self.btnClear.setEnabled(False) # disabling clear button on the start
         # hiding all waveform properties except sine wave
         self.gbPuls.setVisible(False)
-        self.gbSqu.setVisible(False)
         self.gbTri.setVisible(False)
-        self.gbSin.setVisible(True)
         # setting comboBox default value to sine
         self.cmbWaveForm.currentIndexChanged.connect(self.waveFromSelection)
     
@@ -148,12 +156,11 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         try:
             self.dev_ice.baud_rate = 19200
             self.dev_ice.timeout = 65
-            print(self.dev_ice.query('*IDN?')) 
+            self.dev_ice.query('*IDN?')
             self.dev_ice.write('func {}'.format(waveForm))
-            # self.settingParameter()
-            # dev_ice.write('freq {}'.format(frequency))
+            
         except visa.VisaIOError:
-            self.MessageBox(0, "Something is wrong with the device!!! \nEither the device is not on.\nOr there is bad connection in between the device and the computer!!!", 'Warnning',64)
+            self.MessageBox(0,"Something is wrong with the device!!! \nEither the device is not on.\nOr there is bad connection in between the device and the computer!!!", 'Warnning',64)
             sys.exit()
     """ setting up waveform navigation in between 
         -sine, 
@@ -163,37 +170,31 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         -arbitrary waveforms.
     """
     def waveFromSelection(self):
-        if self.cmbWaveForm.currentIndex() == 0:
+        if self.cmbWaveForm.currentIndex() == 1:
             self.gbPuls.setVisible(False)
-            self.gbSqu.setVisible(False)
             self.gbTri.setVisible(False)
-            self.gbSin.setVisible(True)
             self.deviceConneParam('sin') # setting the device waveform to the sin waveform
-        elif self.cmbWaveForm.currentIndex() == 1:
-            self.gbPuls.setVisible(False)
-            self.gbSqu.setVisible(True)
+        elif self.cmbWaveForm.currentIndex() == 2:
+            self.gbPuls.setVisible(True)
+            self.lblAdge.setVisible(False)
+            self.adgeTime.setVisible(False)
             self.gbTri.setVisible(False)
-            self.gbSin.setVisible(False)
             centerFreq = self.centerFrq.value()
             self.deviceConneParam('squ') # setting the device waveform to the square waveform
-        elif self.cmbWaveForm.currentIndex() == 2:
+        elif self.cmbWaveForm.currentIndex() == 3:
             self.gbPuls.setVisible(False)
-            self.gbSqu.setVisible(False)
             self.gbTri.setVisible(True)
-            self.gbSin.setVisible(False)
             centerFreq = self.centerFrq.value()
             self.deviceConneParam('ramp') # setting the device waveform to the sawtoose/ramp/thriangle waveform
-        elif self.cmbWaveForm.currentIndex() == 3:
-            self.gbPuls.setVisible(True)
-            self.gbSqu.setVisible(False)
-            self.gbTri.setVisible(False)
-            self.gbSin.setVisible(False)
-            self.deviceConneParam('puls') # setting the device waveform to the Pulse waveform
         elif self.cmbWaveForm.currentIndex() == 4:
             self.gbPuls.setVisible(True)
-            self.gbSqu.setVisible(False)
             self.gbTri.setVisible(False)
-            self.gbSin.setVisible(False)
+            self.lblAdge.setVisible(True)
+            self.adgeTime.setVisible(True)
+            self.deviceConneParam('puls') # setting the device waveform to the Pulse waveform
+        elif self.cmbWaveForm.currentIndex() == 5:
+            self.gbPuls.setVisible(True)
+            self.gbTri.setVisible(False)
             self.deviceConneParam('arb') # setting the device waveform to the Arbitrary waveform
 
     """ Setting up Visualization property
@@ -257,22 +258,24 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         self.ploting(noise, fftSize, centerFrq, amp)
     
     def draw(self):
-        # self.dev_ice.write('func {}'.format('sin'))
-        center = self.centerFrq.value()# 50 * 10**6
+        center = self.centerFrq.value() * 10**6
         ampl = (self.amplitude.value())
         # per = 11#(self.period.value())
         high = (self.high_level.value())
         low = (self.low_level.value())
         offset = (self.offSet.value())
-        highWidth = self.SquHighWidth.value()/10**-3
-        lowWidth = self.SquLowWidh.value()/10**-3
-        duty = self.SquDcycle.value()
-        if self.cmbWaveForm.currentIndex() == 0:
-            self.settingParameter(center, ampl, high, low, offset)
-        if self.cmbWaveForm.currentIndex() == 1:
-            self.settingParameter(center, ampl, high, low, offset,
-                                highWidth, lowWidth, duty)
-            
+        highWidth = self.highWidth.value()/10**-3
+        lowWidth = self.lowWidth.value()/10**-3
+        duty = self.dcycle.value()
+        if self.cmbWaveForm.currentIndex() == 0:# and low >= 0.00001 and high <= 20:
+            self.MessageBox(0, "please select the proper waveform", 'Warnning',64)
+        else:
+            if self.cmbWaveForm.currentIndex() == 1:
+                self.settingParameter(center, ampl, high, low, offset)
+            if self.cmbWaveForm.currentIndex() == 2:
+                self.settingParameter(center, ampl, high, low, offset,
+                                    highWidth, lowWidth, duty)
+            self.dev_ice.write("OUTP {}".format("1"))
         """
         # enabling and disabling button plot and button clear
         self.btnPlot.setEnabled(False)
