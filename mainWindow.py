@@ -161,9 +161,10 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         high1 = self.highWidth.value()*1000#/10**-3
         low1 = self.lowWidth.value()*1000#/10**-3
         duty = self.dcycle.value()
-        rais = self.raisTime.value()*1000
-        fall = self.fallTime.value()*1000
+        rais = self.raisTime.value()*100
+        fall = self.fallTime.value()*100
         sym = self.symmetry.value()
+        adge = self.adgeTime.value()
         index_ = 0
         if self.cmbWaveForm.currentIndex() == 0:# and low >= 0.00001 and high <= 20:
             self.MessageBox(0, "please select the proper waveform", 'Warnning',64)
@@ -179,6 +180,10 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
                 index_ = 3
                 parameterSet.parameters_.settingParameter(self, index_, center, ampl, high, low, offset,
                                     rise_time = rais, fall_time = fall, symmetry = sym)
+            if self.cmbWaveForm.currentIndex() == 4:
+                index_ = 4
+                parameterSet.parameters_.settingParameter(self, index_, center, ampl, high, low, offset,
+                                    hign_width = high1, low_width = low1, duty_cycle = duty, edge_time = adge)
             # self.dev_ice.write("OUTP {}".format("1"))
         """
         # enabling and disabling button plot and button clear
