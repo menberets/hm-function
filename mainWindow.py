@@ -15,7 +15,8 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         self.setupUi(self)
         self.cotrlCommand = []  # controlling command ready to send
         self.ani = [] 
-        self.dev_ice = None
+        # self.dev_ice = None
+        
 
         ''''button clicking events '''
 
@@ -31,7 +32,7 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         except visa.VisaIOError:
             self.MessageBox(0,"port is in use by another program /n clear the port and run the program again!","Warnning",64)
             sys.exit()
-        
+        self.deviceConneParam()
         # self.deviceConneParam('sin') # setting the default wave from to sine
         self.btnClear.setEnabled(False) # disabling clear button on the start
         self.gbPuls.setVisible(False)
@@ -46,12 +47,12 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
     used by another program
     """
     
-    def deviceConneParam(self, waveForm):
+    def deviceConneParam(self):
         try:
             self.dev_ice.baud_rate = 19200
             self.dev_ice.timeout = 65
             self.dev_ice.query('*IDN?')
-            self.dev_ice.write('func {}'.format(waveForm))
+            # self.dev_ice.write('func {}'.format(waveForm))
             
         except visa.VisaIOError:
             self.MessageBox(0,"Something is wrong with the device!!! \nEither the device is not on.\nOr there is bad connection in between the device and the computer!!!", 'Warnning',64)
@@ -69,27 +70,32 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         if self.cmbWaveForm.currentIndex() == 1:
             self.gbPuls.setVisible(False)
             self.gbTri.setVisible(False)
-            self.deviceConneParam('sin') # setting the device waveform to the sin waveform
+            self.dev_ice.write('func {}'.format("sin")) # setting the device waveform to the sin waveform
+            
         elif self.cmbWaveForm.currentIndex() == 2:
             self.gbPuls.setVisible(True)
             self.lblAdge.setVisible(False)
             self.adgeTime.setVisible(False)
             self.gbTri.setVisible(False)
-            self.deviceConneParam('squ') # setting the device waveform to the square waveform
+            self.dev_ice.write('func {}'.format('squ')) # setting the device waveform to the square waveform
+            
         elif self.cmbWaveForm.currentIndex() == 3:
             self.gbPuls.setVisible(False)
             self.gbTri.setVisible(True)
-            self.deviceConneParam('ramp') # setting the device waveform to the sawtoose/ramp/thriangle waveform
+            self.dev_ice.write('func {}'.format('ramp')) # setting the device waveform to the sawtoose/ramp/thriangle waveform
+           
         elif self.cmbWaveForm.currentIndex() == 4:
             self.gbPuls.setVisible(True)
             self.gbTri.setVisible(False)
             self.lblAdge.setVisible(True)
             self.adgeTime.setVisible(True)
-            self.deviceConneParam('puls') # setting the device waveform to the Pulse waveform
+            self.dev_ice.write('func {}'.format('puls')) # setting the device waveform to the Pulse waveform
+            
         elif self.cmbWaveForm.currentIndex() == 5:
             self.gbPuls.setVisible(True)
             self.gbTri.setVisible(False)
-            self.deviceConneParam('arb') # setting the device waveform to the Arbitrary waveform
+            self.dev_ice.write('func {}'.format('arb')) # setting the device waveform to the Arbitrary waveform
+            
 
     """ Setting up Visualization property
     - setting x-axis and y-axis canvas number of ticks,
