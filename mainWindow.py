@@ -32,7 +32,7 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
             self.MessageBox(0,"port is in use by another program /n clear the port and run the program again!","Warnning",64)
             sys.exit()
         
-        self.deviceConneParam('sin') # setting the default wave from to sine
+        # self.deviceConneParam('sin') # setting the default wave from to sine
         self.btnClear.setEnabled(False) # disabling clear button on the start
         self.gbPuls.setVisible(False)
         self.gbTri.setVisible(False)
@@ -158,11 +158,11 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         high = (self.high_level.value())
         low = (self.low_level.value())
         offset = (self.offSet.value())
-        high1 = self.highWidth.value()*1000#/10**-3
-        low1 = self.lowWidth.value()*1000#/10**-3
+        high1 = self.highWidth.value() * 1000#/10**-3
+        low1 = self.lowWidth.value() * 1000#/10**-3
         duty = self.dcycle.value()
-        rais = self.raisTime.value()*100
-        fall = self.fallTime.value()*100
+        rais = self.raisTime.value() * 100
+        fall = self.fallTime.value() * 100
         sym = self.symmetry.value()
         adge = self.adgeTime.value()
         index_ = 0
@@ -184,23 +184,26 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
                 index_ = 4
                 parameterSet.parameters_.settingParameter(self, index_, center, ampl, high, low, offset,
                                     hign_width = high1, low_width = low1, duty_cycle = duty, edge_time = adge)
+            else:
+                index_ = 5
+                parameterSet.parameters_.settingParameter(self, index_, center, ampl, high, low, offset)
             # self.dev_ice.write("OUTP {}".format("1"))
-        """
-        # enabling and disabling button plot and button clear
-        self.btnPlot.setEnabled(False)
-        self.btnClear.setEnabled(True)
-        # moving the plot/image based on the given time interval
-        self.ani = FuncAnimation(self.mpl.canvas.fig, self.animate, interval=90) 
-        # condition.condition.figProperty(self)
-        self.mpl.canvas.draw()
-        self.mpl.canvas.flush_events()               """
+        
+            # enabling and disabling button plot and button clear
+            self.btnPlot.setEnabled(False)
+            self.btnClear.setEnabled(True)
+            # moving the plot/image based on the given time interval
+            self.ani = FuncAnimation(self.mpl.canvas.fig, self.animate, interval=90) 
+            # condition.condition.figProperty(self)
+            self.mpl.canvas.draw()
+            self.mpl.canvas.flush_events()               
     
     def clearPlot(self):
         # disable clear button and enabling plotting button
         self.btnClear.setEnabled(False)
         self.btnPlot.setEnabled(True)
         self.mpl.canvas.ax.cla() # clearing the canvas/ the fft plot
-        self.ani._stop() # stoping the animating plot
+        self.ani._stop() # stoping the animating plot     
         condition.condition.figProperty(self) # setup the canvas property
         # implmenting the property on the canvas
         self.mpl.canvas.draw()
