@@ -15,7 +15,7 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         self.ani = [] 
         # self.dev_ice = None
         ''''button clicking events '''
-
+        self.switchToAni = True
         self.btnPlot.clicked.connect(self.sin_wave_param)
         self.btnClear.clicked.connect(self.clearPlot)
         self.MessageBox = ctypes.windll.user32.MessageBoxW
@@ -28,6 +28,7 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         except visa.VisaIOError:
             self.MessageBox(0,"port is in use by another program /n clear the port and run the program again!","Warnning",64)
             sys.exit()
+        
         self.deviceConneParam()
         # self.deviceConneParam('sin') # setting the default wave from to sine
         self.btnClear.setEnabled(False) # disabling clear button on the start
@@ -95,7 +96,6 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
             self.gbTri.setVisible(False)
             self.dev_ice.write('func {}'.format('arb')) # setting the device waveform to the Arbitrary waveform
             
-
     """ Setting up Visualization property
     - setting x-axis and y-axis canvas number of ticks,
     - setting x-axis and y-axis minimum and amaximum limits
@@ -103,10 +103,14 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
     - generating sine wave 
     - based on the generated sine wave create fft for the center frequency and add noise to it
     """        
-    def ploting(self, noise, fftSize, centerFrq, amp):
+
+    def ploting(self):
+        fftSize = 8192
+        centerFrq = self.centerFrq.value()
+        amp = self.amplitude.value()
         fs = centerFrq * 32 # sampling frequency 32 times of the center frequency
         ts = 1/fs
-
+        noise = condition.condition.noiseScl(self, fftSize, centerFrq, amp)
         # setting seventeen x-axis ticks(grids) from 0 to twise of the center frequency
         self.mpl.canvas.ax.set_xticks(np.linspace(0,centerFrq*2,17)) 
         # adjusting noise amplitude based on center frequency aplitude
@@ -146,15 +150,13 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
             self.mpl.canvas.ax.set_xlim(0.0, centerFrq*2)         
 
     def animate(self, i):
-        fftSize = 8192
-        centerFrq = float(self.centerFrq.value())       
-        amp = float(self.amplitude.value())
+        
         # global noiseScl
         condition.condition.figProperty(self) #  setup the canvas property
         # adjusting the noise scale based on the inputed center frequency
-        noise = condition.condition.noiseScl(self, fftSize, centerFrq, amp) 
+        # noise = condition.condition.noiseScl(self, fftSize, centerFrq, amp) 
         # passing noise, FFT size, Frequency amd aplitude for plotting fubction
-        self.ploting(noise, fftSize, centerFrq, amp)
+        self.ploting()
 
     '''
     variable setting sine wave form parameter setting
@@ -162,11 +164,11 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
     '''
     def sin_wave_param(self):
         Frequency = self.centerFrq.value() * 10**6
-        Amplitude = (self.amplitude.value())
+        Amplitude = self.amplitude.value()
         # period = 11#(self.period.value())
         # highLevel = (self.high_level.value())
         # lowLevel = (self.low_level.value())
-        offSet = (self.offSet.value())
+        offSet = 0# (self.offSet.value())
         highWidth = self.highWidth.value() * 1000#/10**-3
         lowWidth = self.lowWidth.value() * 1000#/10**-3
         dutyCycle = self.dcycle.value()
@@ -177,20 +179,112 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         waveListIndex_ = self.cmbWaveForm.currentIndex()
 
         ''' for some reasone high_level and low_level of the power is must be equal'''
+        period = 1 / Frequency
+        print(period)
+        
         high_low_level = Amplitude/2
         highLevel = high_low_level
         lowLevel = high_low_level
         self.high_level.setValue(highLevel)
         self.low_level.setValue(lowLevel)
 
-        self.draw(Frequency, Amplitude, highLevel, lowLevel, offSet, highWidth, 
-                    lowWidth, dutyCycle, raisTime, fallTime, symmetry, adgeTime, waveListIndex_)
+        self.validation(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, highWidth, 
+                    lowWidth, dutyCycle, raisTime, fallTime, symmetry, adgeTime)
+    
+    '''validating each input based on their upper and lower values'''
 
+    def validation(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, highWidth,
+             lowWidth, dutyCycle, raisTime, fallTime, symmetryRam, adgeTime):
+        if waveListIndex_ == 0:
+            self.MessageBox(0, "please select the proper waveform", 'Warnning',64)
+        else:
+            if waveListIndex_ == 1:
+                if Amplitude >= 1E-2 and Amplitude <= 20:
+                    if Frequency >= 10E-5 and Frequency <= 5E7:
+                        self.transmitter_(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet) 
+                        
+                    else:
+                        self.MessageBox(0,"Invalid input!!! Frequency range is between 1E-5 and 5E7 MHz.", 'Warnning',64)
+                else:
+                    self.MessageBox(0,"Amplitude is in range of 0.01 and 20 Volt!!!", 'Warnning',64)
+                    
+            elif waveListIndex_ == 2:
+                if Amplitude >= 1E-2 and Amplitude <= 16:
+                    if (Frequency >= 10E-5 and Frequency <= 5E7):# and dutyCycle >= 20 and dutyCycle <= 80):
+                        if highWidth >= 1.69E-3 and highWidth <= 6.77E-3 and  lowWidth >= 1.69E-3 and lowWidth <= 6.77E-3:
+                            self.transmitter_(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet,
+                                                hign_width = highWidth, low_width=lowWidth, duty_cycle = dutyCycle) 
+                        else:
+                            self.MessageBox(0,"Invalid input!!! high Width / low Width range is between 1.69E-3 and 6.77E-3 .", 'Warnning',64)
+                    else:
+                        self.MessageBox(0,"Invalid input!!! Frequency range is between 1E-5 and 5E7 MHz.", 'Warnning',64)
+                else:
+                    self.MessageBox(0,"Amplitude is in range of 0.01 and 16 Volt!!!", 'Warnning',64)
+                
+            elif waveListIndex_ == 3:
+                if Amplitude >= 1E-2 and Amplitude <= 20:
+                    if Frequency >= 10E-5 and Frequency <= 1E7:
+                        if fallTime>=0 and fallTime <= 8.47E-3 and raisTime >= 0 and raisTime <=8.47E-3:
+                            if symmetryRam >= 0 and symmetryRam <= 100:
+                                self.transmitter_(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, rise_time = raisTime,
+                                                    fall_time = fallTime, symmetry = symmetryRam)
+                            else:
+                                self.MessageBox(0,"Invalid input!!! symmetry range is between 0 and 100.", 'Warnning',64)
+                        else:
+                            self.MessageBox(0,"Invalid input!!! fallTime / raisTime range is between 0 and 8.47E-3.", 'Warnning',64)
+                    else:
+                        self.MessageBox(0,"Invalid input!!! Frequency range is between 1E-5 and 5E7 MHz.", 'Warnning',64)
+                else:
+                    self.MessageBox(0,"Amplitude is in range of 0.01 and 20 Volt!!!", 'Warnning',64)
+                
+            elif waveListIndex_ == 4:
+                if Amplitude >= 1E-2 and Amplitude <= 20:
+                    if Frequency >= 1E-5 and Frequency <= 2.5E7:
+                        if highWidth >= 2E-08 and highWidth <= 8.473E-03 and lowWidth >= 2E-08 and lowWidth <= 8.473E-03:
+                            if adgeTime >= 8E-09 and adgeTime <= 5E-08: #dutyCycle >= 1E-03 and dutyCycle <= 9.9999E+01 and 
+                                self.transmitter_(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, hign_width = highWidth,
+                                                    low_width = lowWidth, duty_cycle = dutyCycle, edge_time = adgeTime)
+                            else:
+                                self.MessageBox(0,"Invalid input!!! adgeTime range is between 8E-09 and 5E-08 .", 'Warnning',64)
+                        else:
+                            self.MessageBox(0,"Invalid input!!! high Width / low Width range is between 1.69E-3 and 6.77E-3 .", 'Warnning',64)
+                    else:
+                        self.MessageBox(0,"Invalid input!!! Frequency range is between 1E-5 and 2.5E7 MHz.", 'Warnning',64)
+                else:
+                    self.MessageBox(0,"Amplitude is in range of 0.01 and 20 Volt!!!", 'Warnning',64)
+
+            else:
+                if Frequency >= 1E-5 and Frequency <= 2.5E7:
+                    self.transmitter_(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet)  
+                else:
+                    self.MessageBox(0,"Invalid input!!! Frequency range is between 1E-5 and 2.5E7 MHz.", 'Warnning',64)         
+        
     '''
         changing the parameter of each wave forms and showing/visualizing 
         the fft of output frequency / center frequency
 
     '''
+    def transmitter_(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, highWidth=0,
+            lowWidth=0, dutyCycle=0, raisTime=0, fallTime=0, symmetryRam=0, adgeTime=0):
+        self.switchToAni = True
+        if waveListIndex_ == 1:
+            parameterSet.parameters_.settingParameter(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet)
+            self.play_visualizaton(Frequency, Amplitude)
+        elif waveListIndex_ == 2:
+            parameterSet.parameters_.settingParameter(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet,
+                                            hign_width = highWidth, low_width=lowWidth, duty_cycle = dutyCycle)
+            self.play_visualizaton()
+        elif waveListIndex_ == 3:
+            parameterSet.parameters_.settingParameter(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet,
+                                            rise_time = raisTime, fall_time = fallTime, symmetry = symmetryRam)
+            self.play_visualizaton() 
+        elif waveListIndex_ == 4:
+            parameterSet.parameters_.settingParameter(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet,
+                                            hign_width = highWidth, low_width = lowWidth, duty_cycle = dutyCycle, edge_time = adgeTime)
+            self.play_visualizaton()
+        else:
+            parameterSet.parameters_.settingParameter(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet)
+            self.play_visualizaton()
 
     def draw(self, Frequency, Amplitude, highLevel, lowLevel, offSet, highWidth,
              lowWidth, dutyCycle, raisTime, fallTime, symmetryRam, adgeTime, waveListIndex_):
@@ -237,18 +331,24 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
             else:
                 self.MessageBox(0,"Amplitude is in range of 0.01 and 20 Volt!!!", 'Warnning',64)
 
-    def play_visualizaton(self):
-        # self.dev_ice.write("OUTP {}".format("1"))
-        # enabling and disabling button plot and button clear
-        self.btnPlot.setEnabled(False)
-        self.btnClear.setEnabled(True)
-        # moving the plot/image based on the given time interval
-        self.ani = FuncAnimation(self.mpl.canvas.fig, self.animate, interval=90) 
-        # condition.condition.figProperty(self)
-        self.mpl.canvas.draw()
-        self.mpl.canvas.flush_events()              
+    def play_visualizaton(self, frequency, amplitude):
+        if self.switchToAni:
+                
+            # self.dev_ice.write("OUTP {}".format("1"))
+            # enabling and disabling button plot and button clear
+            self.btnPlot.setEnabled(False)
+            self.btnClear.setEnabled(True)
+            # moving the plot/image based on the given time interval
+            self.ani = FuncAnimation(self.mpl.canvas.fig, self.animate, interval=90) 
+            # condition.condition.figProperty(self)
+            self.mpl.canvas.draw()
+            self.mpl.canvas.flush_events()
+        else:
+            print("stop")  
+            self.clearPlot()          
     
     def clearPlot(self):
+        self.switchToAni = False
         # disable clear button and enabling plotting button
         self.btnClear.setEnabled(False)
         self.btnPlot.setEnabled(True)

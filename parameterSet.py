@@ -1,9 +1,11 @@
 from matplotlib.pyplot import cla
 import pyvisa as visa
+import sys
 class parameters_():
     def __init__(self):
-        self.dev_ice = []
-    def settingParameter(self, index_, ceter_frequency, amplitude, high_level, low_level, offSet, hign_width = 0,low_width = 0,duty_cycle =0, rise_time = 0, fall_time = 0, symmetry = 0, edge_time = 0):#
+        self.dev_ice = None 
+    def settingParameter(self, index_, ceter_frequency, amplitude, high_level, low_level, offSet=0, hign_width = 0,low_width = 0,duty_cycle =0, rise_time = 0, fall_time = 0, symmetry = 0, edge_time = 0):#
+        print(index_, ceter_frequency, amplitude, high_level, low_level, offSet)
         if index_ == 1:
             if high_level-low_level ==amplitude:                
                 self.dev_ice.write('FREQ {}'.format(ceter_frequency))
