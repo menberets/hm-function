@@ -32,7 +32,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="centerFrq"/>
+      <widget class="QDoubleSpinBox" name="centerFrq">
+       <property name="maximum">
+        <double>9999.989999999999782</double>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -57,6 +61,9 @@
       <widget class="QDoubleSpinBox" name="amplitude">
        <property name="minimum">
         <double>-500.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>9999.989999999999782</double>
        </property>
       </widget>
      </item>
@@ -119,6 +126,9 @@
       <widget class="QDoubleSpinBox" name="period">
        <property name="minimum">
         <double>-500.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>999.990000000000009</double>
        </property>
       </widget>
      </item>
@@ -292,6 +302,9 @@
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
+        <property name="maximum">
+         <double>9999.989999999999782</double>
+        </property>
        </widget>
       </item>
      </layout>
@@ -317,6 +330,9 @@
        <widget class="QDoubleSpinBox" name="dcycle">
         <property name="minimum">
          <double>-500.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>9999.989999999999782</double>
         </property>
        </widget>
       </item>
@@ -344,6 +360,9 @@
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
+        <property name="maximum">
+         <double>9999.989999999999782</double>
+        </property>
        </widget>
       </item>
      </layout>
@@ -369,6 +388,9 @@
        <widget class="QDoubleSpinBox" name="adgeTime">
         <property name="minimum">
          <double>-500.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999.990000000000009</double>
         </property>
        </widget>
       </item>
@@ -412,6 +434,9 @@
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
+        <property name="maximum">
+         <double>9999.989999999999782</double>
+        </property>
        </widget>
       </item>
      </layout>
@@ -438,6 +463,9 @@
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
+        <property name="maximum">
+         <double>9999.989999999999782</double>
+        </property>
        </widget>
       </item>
      </layout>
@@ -463,6 +491,9 @@
        <widget class="QDoubleSpinBox" name="symmetry">
         <property name="minimum">
          <double>-500.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999.990000000000009</double>
         </property>
        </widget>
       </item>
