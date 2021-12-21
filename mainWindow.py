@@ -56,7 +56,7 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
             # self.dev_ice.write('func {}'.format(waveForm))
             
         except visa.VisaIOError:
-            self.MessageBox(0,"Something is wrong with the device!!! \nEither the device is not on.\nOr there is bad connection in between the device and the computer!!!", 'Warnning',64)
+            self.MessageBox(0,"Something is wrong with the device!!! \nEither the device is not on.\n Or there is bad connection in between the device and the computer!!!", 'Warnning',64)
             sys.exit()
 
     """ setting up waveform navigation in between 
@@ -68,6 +68,10 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
     """
 
     def waveFromSelection(self):
+        if self.cmbWaveForm.currentIndex() == 0:
+            self.gbPuls.setVisible(False)
+            self.gbTri.setVisible(False)
+            
         if self.cmbWaveForm.currentIndex() == 1:
             self.gbPuls.setVisible(False)
             self.gbTri.setVisible(False)
@@ -93,7 +97,7 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
             self.dev_ice.write('func {}'.format('puls')) # setting the device waveform to the Pulse waveform
             
         elif self.cmbWaveForm.currentIndex() == 5:
-            self.gbPuls.setVisible(True)
+            self.gbPuls.setVisible(False)
             self.gbTri.setVisible(False)
             self.dev_ice.write('func {}'.format('arb')) # setting the device waveform to the Arbitrary waveform
             
@@ -166,15 +170,8 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
     def waveForms_param(self):
         Frequency = self.centerFrq.value() * 10**6
         Amplitude = self.amplitude.value()
-        # period = 11#(self.period.value())
-        # highLevel = (self.high_level.value())
-        # lowLevel = (self.low_level.value())
-        offSet = 0# (self.offSet.value())
-        highWidth = self.highWidth.value()#/10**-3
-        lowWidth = self.lowWidth.value() #/10**-3
+        offSet = 0
         dutyCycle = self.dcycle.value()
-        raisTime = self.raisTime.value() #* 100
-        fallTime = self.fallTime.value() #* 100
         symmetryRam = self.symmetry.value()
         adgeTime = self.adgeTime.value()/10**9
         waveListIndex_ = self.cmbWaveForm.currentIndex()
@@ -185,39 +182,36 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         high_low_level = Amplitude/2
         highLevel = high_low_level
         lowLevel = high_low_level
+
         self.high_level.setValue(highLevel)
         self.low_level.setValue(-(lowLevel))
 
-        # self.validation(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, highWidth, 
-        #             lowWidth, dutyCycle, raisTime, fallTime, symmetry, adgeTime)
         self.validation(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, dutyCycle, symmetryRam, adgeTime)
 
     '''validating each input based on their upper and lower values'''
 
-    # def validation(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, highWidth,
-    #          lowWidth, dutyCycle, raisTime, fallTime, symmetryRam, adgeTime):
+
     def validation(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, dutyCycle, symmetryRam, adgeTime):
-        # print(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, dutyCycle, raisTime, fallTime, symmetryRam)
         if waveListIndex_ == 0:
             self.MessageBox(0, "please select the proper waveform", 'Warnning',64)
         else:
             if waveListIndex_ == 1:
                 if Amplitude >= 1E-2 and Amplitude <= 20:
                     if Frequency >= 10E-5 and Frequency <= 5E7:
-                        self.transmitter_(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet)   
+                        self.transmitter_(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, dutyCycle, symmetryRam, adgeTime)   
                     else:
                         self.MessageBox(0,"Invalid input!!! Frequency range is between 1E-5 and 5E7 MHz.", 'Warnning',64)
                 else:
                     self.MessageBox(0,"Amplitude is in range of 0.01 and 20 Volt!!!", 'Warnning',64)
                     
             elif waveListIndex_ == 2:
-                if Amplitude >= 1E-2 and Amplitude <= 16:
-                    if (Frequency >= 10E-5 and Frequency <= 5E7):# and dutyCycle >= 20 and dutyCycle <= 80):
-                        # if highWidth >= 10 and highWidth <= 6.77E-3 and  lowWidth >= 1.69E-3 and lowWidth <= 6.77E-3:
-                        self.transmitter_(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet,
-                                            dutyCycle) #hign_width = highWidth, low_width=lowWidth,
-                        # else:
-                        #     self.MessageBox(0,"Invalid input!!! high Width / low Width range is between 1.69E-3 and 6.77E-3 .", 'Warnning',64)
+                if Amplitude >= 1E-2 and Amplitude <= 20:
+                    if (Frequency >= 10E-5 and Frequency <= 5E7):
+                        if dutyCycle >= 20 and dutyCycle <= 80:
+                            self.transmitter_(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet,
+                                            dutyCycle, symmetryRam, adgeTime)
+                        else:
+                            self.MessageBox(0,"Invalid input!!! high Dutycycle range is between 20 and 80 % .", 'Warnning',64)
                     else:
                         self.MessageBox(0,"Invalid input!!! Frequency range is between 1E-5 and 5E7 MHz.", 'Warnning',64)
                 else:
@@ -226,37 +220,35 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
             elif waveListIndex_ == 3:
                 if Amplitude >= 1E-2 and Amplitude <= 20:
                     if Frequency >= 10E-5 and Frequency <= 1E7:
-                        # if fallTime>=0 and fallTime <= 8.47E-3 and raisTime >= 0 and raisTime <=8.47E-3:
                         if symmetryRam >= 0 and symmetryRam <= 100:
-                            self.transmitter_(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, dutyCycle, symmetryRam)
+                            self.transmitter_(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, dutyCycle, symmetryRam, adgeTime)
                         else:
                             self.MessageBox(0,"Invalid input!!! symmetry range is between 0 and 100.", 'Warnning',64)
-                        # else:
-                        #     self.MessageBox(0,"Invalid input!!! fallTime / raisTime range is between 0 and 8.47E-3.", 'Warnning',64)
                     else:
                         self.MessageBox(0,"Invalid input!!! Frequency range is between 1E-5 and 5E7 MHz.", 'Warnning',64)
                 else:
                     self.MessageBox(0,"Amplitude is in range of 0.01 and 20 Volt!!!", 'Warnning',64)
                 
             elif waveListIndex_ == 4:
-                if Amplitude >= 1E-2 and Amplitude <= 20:
+                if Amplitude >= 1E-2 and Amplitude <= 10:
                     if Frequency >= 1E-5 and Frequency <= 2.5E7:
-                        # if highWidth >= 2E-08 and highWidth <= 8.473E-03 and lowWidth >= 2E-08 and lowWidth <= 8.473E-03:
-                        if adgeTime >= 8E-09 and adgeTime <= 5E-08: #dutyCycle >= 1E-03 and dutyCycle <= 9.9999E+01 and 
-                            self.transmitter_(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, 
-                                dutyCycle, symmetryRam, adgeTime)
+                        if dutyCycle >= 0.999 and dutyCycle <= 99.999:
+                            if adgeTime >= 8E-09 and adgeTime <= 5E-08:  
+                                self.transmitter_(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, 
+                                    dutyCycle, symmetryRam, adgeTime)
+                            else:
+                                self.MessageBox(0,"Invalid input!!! adgeTime range is between 8E-09 and 5E-08 .", 'Warnning',64)
                         else:
-                            self.MessageBox(0,"Invalid input!!! adgeTime range is between 8E-09 and 5E-08 .", 'Warnning',64)
-                        # else:
-                        #     self.MessageBox(0,"Invalid input!!! high Width / low Width range is between 1.69E-3 and 6.77E-3 .", 'Warnning',64)
+                            self.MessageBox(0,"Invalid input!!! Dutycyle range is between 0.999 and 99.999 % .", 'Warnning',64)
                     else:
                         self.MessageBox(0,"Invalid input!!! Frequency range is between 1E-5 and 2.5E7 MHz.", 'Warnning',64)
                 else:
-                    self.MessageBox(0,"Amplitude is in range of 0.01 and 20 Volt!!!", 'Warnning',64)
+                    self.MessageBox(0,"Amplitude is in range of 0.01 and 10 Volt!!!", 'Warnning',64)
 
             else:
                 if Frequency >= 1E-5 and Frequency <= 2.5E7:
-                    self.transmitter_(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet)  
+                    self.transmitter_(waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet,
+                                        dutyCycle, symmetryRam, adgeTime)  
                 else:
                     self.MessageBox(0,"Invalid input!!! Frequency range is between 1E-5 and 2.5E7 MHz.", 'Warnning',64)         
         
@@ -265,8 +257,7 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         the fft of output frequency / center frequency
 
     '''
-    # def transmitter_(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, highWidth=0,
-    #         lowWidth=0, dutyCycle=0, raisTime=0, fallTime=0, symmetryRam=0, adgeTime=0):
+    
     def transmitter_(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet, dutycycle, symmetryRam, adgeTime):
 
         period_ = (1 / Frequency)*10**9
@@ -275,6 +266,7 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         if waveListIndex_ == 1:
             parameterSet.parameters_.settingParameter(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet)
             self.play_visualizaton()
+        
         elif waveListIndex_ == 2:
             '''
             basic formla for calculating dutycycle, highWidth and lowWidth is 
@@ -322,20 +314,24 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
             self.raisTime.setValue(raisTime)
             self.fallTime.setValue(fallTime)
 
-            parameterSet.parameters_.settingParameter(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet=0,
+            parameterSet.parameters_.settingParameter(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet= 0,
                                             rise_time = raisTime, fall_time = fallTime, symmetry = symmetryRam)
             self.play_visualizaton() 
         
         elif waveListIndex_ == 4:
             pulseWidthPulse = (dutycycle * period_)/100
             pulsePeriodPulse = period_ - pulseWidthPulse
+
+            self.high_level.setValue(Amplitude)
+            self.low_level.setValue(offSet)
+
             if pulseWidthPulse > 20 and pulsePeriodPulse >20:
 
                 self.highWidth.setValue(pulseWidthPulse)
                 self.lowWidth.setValue(pulsePeriodPulse)
 
                 parameterSet.parameters_.settingParameter(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet=0,
-                                                hign_width = pulseWidthPulse, low_width=pulsePeriodPulse, duty_cycle = dutycycle, edge_time = adgeTime)
+                                                hign_width = pulseWidthPulse, low_width=pulsePeriodPulse, duty_cycle = dutycycle, edge_time = (8)/10**9)
                 self.play_visualizaton()
             else:
                 '''
@@ -351,7 +347,7 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
                 self.dcycle.setValue(dcycle_)
 
                 parameterSet.parameters_.settingParameter(self, waveListIndex_, Frequency, Amplitude, highLevel, lowLevel, offSet=0,
-                                                hign_width = pulseWidth, low_width=pulsePeriod, duty_cycle = dcycle_, edge_time = adgeTime)
+                                                hign_width = pulseWidth, low_width=pulsePeriod, duty_cycle = dcycle_, edge_time = (8)/10**9)
                 self.play_visualizaton()
 
         else:
@@ -429,6 +425,7 @@ class DesignerMainWindow(QtWidgets.QMainWindow, spaDesigner.Ui_MainWindow):
         # implmenting the property on the canvas
         self.mpl.canvas.draw()
         self.mpl.canvas.flush_events()
+        
         
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

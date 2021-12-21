@@ -33,6 +33,9 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="centerFrq">
+       <property name="decimals">
+        <number>7</number>
+       </property>
        <property name="maximum">
         <double>9999.989999999999782</double>
        </property>
@@ -59,11 +62,17 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="amplitude">
+       <property name="decimals">
+        <number>3</number>
+       </property>
        <property name="minimum">
         <double>-500.000000000000000</double>
        </property>
        <property name="maximum">
         <double>9999.989999999999782</double>
+       </property>
+       <property name="value">
+        <double>0.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -124,6 +133,9 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="period">
+       <property name="decimals">
+        <number>5</number>
+       </property>
        <property name="minimum">
         <double>-500.000000000000000</double>
        </property>
@@ -153,6 +165,9 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="high_level">
+       <property name="decimals">
+        <number>5</number>
+       </property>
        <property name="minimum">
         <double>-500.000000000000000</double>
        </property>
@@ -179,6 +194,9 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="low_level">
+       <property name="decimals">
+        <number>5</number>
+       </property>
        <property name="minimum">
         <double>-500.000000000000000</double>
        </property>
@@ -293,12 +311,15 @@
       <item>
        <widget class="QLabel" name="label_23">
         <property name="text">
-         <string>High Width (S)</string>
+         <string>High Width (ns)</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QDoubleSpinBox" name="highWidth">
+        <property name="decimals">
+         <number>4</number>
+        </property>
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
@@ -328,6 +349,9 @@
       </item>
       <item>
        <widget class="QDoubleSpinBox" name="dcycle">
+        <property name="decimals">
+         <number>4</number>
+        </property>
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
@@ -351,12 +375,15 @@
       <item>
        <widget class="QLabel" name="label_25">
         <property name="text">
-         <string>Low Width (S)</string>
+         <string>Low Width (ns)</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QDoubleSpinBox" name="lowWidth">
+        <property name="decimals">
+         <number>4</number>
+        </property>
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
@@ -386,6 +413,9 @@
       </item>
       <item>
        <widget class="QDoubleSpinBox" name="adgeTime">
+        <property name="decimals">
+         <number>4</number>
+        </property>
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
@@ -425,12 +455,15 @@
       <item>
        <widget class="QLabel" name="label_10">
         <property name="text">
-         <string>Rais Time (S)</string>
+         <string>Rais Time (ns)</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QDoubleSpinBox" name="raisTime">
+        <property name="decimals">
+         <number>5</number>
+        </property>
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
@@ -454,12 +487,15 @@
       <item>
        <widget class="QLabel" name="label_11">
         <property name="text">
-         <string>Fall Time (S)</string>
+         <string>Fall Time (ns)</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QDoubleSpinBox" name="fallTime">
+        <property name="decimals">
+         <number>5</number>
+        </property>
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
@@ -489,6 +525,9 @@
       </item>
       <item>
        <widget class="QDoubleSpinBox" name="symmetry">
+        <property name="decimals">
+         <number>5</number>
+        </property>
         <property name="minimum">
          <double>-500.000000000000000</double>
         </property>
@@ -498,6 +537,8 @@
        </widget>
       </item>
      </layout>
+     <zorder>symmetry</zorder>
+     <zorder>label_14</zorder>
     </widget>
    </widget>
    <zorder>horizontalLayoutWidget</zorder>
